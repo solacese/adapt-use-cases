@@ -18,15 +18,46 @@
     '10:02  Invoice 5100098772 from Verpack GmbH is on hold: price 15% above PO 4500081233. AP is reviewing. You will be told when it is resolved.',
     '09:48  Invoice 5100098765 from Packaging Supplier A released, payment on 24 Oct.'
   ];
-  const makeEntry = (status = 'waiting') => ({
-    status, selectedOption: 0, gates: {}, confirmations: [], feed: [], log: [], decidedAt: '', watching: false
+  const seedLogs = {
+    orderguard: [
+      { time: '09:14:02', event: 'sap.s4.beh.salesorder.v1.SalesOrder.Created.v1' },
+      { time: '09:14:03', event: 'order/at-risk/v1' },
+      { time: '09:14:41', event: 'order/proposal/v1' }
+    ],
+    lineguard: [
+      { time: '22:40:12', event: 'sap/dm/telemetry/anomaly/v1/plant1100/line3/spindle17' },
+      { time: '22:40:15', event: 'aem/queue/lineguard.plant1100/rate-limited/v1' },
+      { time: '22:40:48', event: 'maintenance/proposal/v1' }
+    ],
+    matchfix: [
+      { time: '10:02:14', event: 'sap.s4.beh.supplierinvoice.v1.SupplierInvoice.Created.v1' },
+      { time: '10:02:16', event: 'invoice/mismatch/v1' },
+      { time: '10:02:22', event: 'invoice/decision/v1' },
+      { time: '10:02:23', event: 'invoice/status/v1' }
+    ],
+    shipmentguard: [
+      { time: '14:05:09', event: 'sap/bn/shipment/eta-changed/v1/lsp-north/SHP-77812' },
+      { time: '14:05:11', event: 'shipment/deviation/v1' },
+      { time: '14:05:50', event: 'shipment/impact/v1' },
+      { time: '14:06:02', event: 'shipment/proposal/v1' }
+    ],
+    payhold: [
+      { time: '09:12:00', event: 'sap.s4.beh.businesspartner.v1.BusinessPartner.Changed.v1' },
+      { time: '16:00:00', event: 'sap.s4.beh.paymentrun.v1.PaymentRun.Scheduled.v1' },
+      { time: '16:00:47', event: 'payment/hold/v1 · V-100 · BIS-2026-0914' },
+      { time: '16:00:47', event: 'payment/hold/v1 · V-233 · BIS-2026-0915' },
+      { time: '16:00:48', event: 'payment/screened/v1 · 146 lines' }
+    ]
+  };
+  const makeEntry = (key, status = 'waiting') => ({
+    status, selectedOption: 0, gates: {}, confirmations: [], feed: [], log: seedLogs[key].map(item => ({ ...item })), decidedAt: '', watching: false
   });
   const defaultState = () => ({
-    orderguard: makeEntry(),
-    lineguard: { ...makeEntry(), countdownStarted: Date.now() },
-    matchfix: { ...makeEntry(), feed: [...defaultFeed], reviewed: [] },
-    shipmentguard: { ...makeEntry(), gates: { customer: 'pending', logistics: 'pending' } },
-    payhold: { ...makeEntry('held'), confirmations: [], countdownStarted: Date.now() }
+    orderguard: makeEntry('orderguard'),
+    lineguard: { ...makeEntry('lineguard'), countdownStarted: Date.now() },
+    matchfix: { ...makeEntry('matchfix'), feed: [...defaultFeed], reviewed: [] },
+    shipmentguard: { ...makeEntry('shipmentguard'), gates: { customer: 'pending', logistics: 'pending' } },
+    payhold: { ...makeEntry('payhold', 'held'), confirmations: [], countdownStarted: Date.now() }
   });
 
   let state = loadState();
@@ -45,7 +76,7 @@
       useCases.forEach(key => {
         base[key] = { ...base[key], ...saved[key] };
         base[key].gates = { ...base[key].gates, ...(saved[key]?.gates || {}) };
-        base[key].log = Array.isArray(saved[key]?.log) ? saved[key].log : [];
+        base[key].log = Array.isArray(saved[key]?.log) && saved[key].log.length ? saved[key].log : base[key].log;
       });
       return base;
     } catch (_) {
@@ -527,7 +558,7 @@
       openDialog(`${labels[key]} architecture`, `<div class="architecture-empty"><div class="architecture-symbol"><span>Event</span><i></i><span>Agent</span><i></i><span>Approval</span></div><p>The architecture image referenced by the build brief was not included in this repository. This prototype does not invent a system diagram or imply a live connection.</p><button class="btn" data-dialog="eventlog" data-case="${key}">Open event log</button></div>`);
     } else {
       const rows = state[key].log.length ? state[key].log.map(item => `<li><time>${escapeHtml(item.time)}</time><code>${escapeHtml(item.event)}</code></li>`).join('') : '<li>No decision events published in this simulation yet.</li>';
-      openDialog(`${labels[key]} event log`, `<p class="dialog-note">Simulated local event log. No broker or SAP system is connected.</p><ol class="event-log">${rows}</ol>`);
+      openDialog(`${labels[key]} event log`, `<p class="dialog-note">Simulated SAP and Advanced Event Mesh event log for this design prototype. No broker or SAP system is connected.</p><ol class="event-log">${rows}</ol>`);
     }
   }
 
