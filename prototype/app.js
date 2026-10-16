@@ -76,7 +76,12 @@
       useCases.forEach(key => {
         base[key] = { ...base[key], ...saved[key] };
         base[key].gates = { ...base[key].gates, ...(saved[key]?.gates || {}) };
-        base[key].log = Array.isArray(saved[key]?.log) && saved[key].log.length ? saved[key].log : base[key].log;
+        const savedLog = Array.isArray(saved[key]?.log) ? saved[key].log : [];
+        const seededNames = new Set(seedLogs[key].map(item => item.event));
+        base[key].log = [
+          ...seedLogs[key].map(item => ({ ...item })),
+          ...savedLog.filter(item => !seededNames.has(item.event))
+        ];
       });
       return base;
     } catch (_) {
