@@ -1,0 +1,105 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>PayHold: payment run</title><style>
+:root{--sapFontFamily:"72","72full",Arial,Helvetica,sans-serif;--sapFontSize:.875rem;--sapBackgroundColor:#f5f6f7;--sapTextColor:#131e29;--sapTitleColor:#131e29;
+--sapContent_LabelColor:#556b82;--sapShellColor:#fff;--sapShell_TextColor:#131e29;--sapContent_HeaderShadow:0 .125rem .125rem 0 rgba(34,53,72,.05),inset 0 -.0625rem 0 0 #d9d9d9;
+--sapContent_Shadow0:0 0 .125rem 0 rgba(34,53,72,.2),0 .125rem .25rem 0 rgba(34,53,72,.2);--sapGroup_ContentBorderColor:#d9d9d9;--sapList_BorderColor:#e5e5e5;--sapList_HeaderTextColor:#131e29;
+--sapList_SelectionBackgroundColor:#ebf8ff;--sapList_SelectionBorderColor:#0064d9;--sapList_Hover_Background:#eaecee;--sapList_TableGroupHeaderBackground:#eff1f2;
+--sapButton_Background:#fff;--sapButton_BorderColor:#bcc3ca;--sapButton_TextColor:#0064d9;--sapButton_Emphasized_Background:#0070f2;--sapButton_Emphasized_TextColor:#fff;
+--sapButton_Reject_Background:#ffd6e9;--sapButton_Reject_BorderColor:#ffc2de;--sapButton_Reject_TextColor:#aa0808;--sapButton_Accept_Background:#ebf5cb;--sapButton_Accept_BorderColor:#dbeda0;--sapButton_Accept_TextColor:#256f3a;
+--sapButton_BorderCornerRadius:.5rem;--sapElement_BorderCornerRadius:.75rem;--sapPositiveTextColor:#256f3a;--sapNegativeTextColor:#aa0808;--sapCriticalTextColor:#b44f00;--sapInformativeTextColor:#0064d9;--sapNeutralColor:#788fa6;
+--sapPositiveElementColor:#30914c;--sapNegativeElementColor:#f53232;--sapCriticalElementColor:#e76500;--sapInformativeElementColor:#0070f2;
+--sapIndication4_Background:#256f3a;--sapIndication2_Background:#aa0808;--sapIndication3_Background:#e76500;--sapIndication5_Background:#0070f2;
+--sapInformationBackground:#e1f4ff;--sapInformationBorderColor:#0070f2;--sapContent_NonInteractiveIconColor:#758ca4;--sapContent_FocusColor:#0032a5;--sapAvatar_6_Background:#d1efff;--sapPageFooter_BorderColor:#d9d9d9;}
+*{box-sizing:border-box}html,body{margin:0;height:100%}
+body{font-family:var(--sapFontFamily);font-size:var(--sapFontSize);line-height:1.5;color:var(--sapTextColor);background:var(--sapBackgroundColor)}
+.shell{height:3.25rem;background:var(--sapShellColor);color:var(--sapShell_TextColor);display:flex;align-items:center;padding:0 1.5rem;position:relative;z-index:2}
+.brand .mark{display:inline-block;font-weight:800;font-size:1.25rem;letter-spacing:.02em;color:#0070f2;padding:.1rem .45rem;border:2px solid #0070f2;border-radius:.3rem;line-height:1.2}
+.home{margin-left:1.5rem;font-size:1rem;font-weight:400;color:var(--sapShell_TextColor)}.home .chev{font-size:.9rem;color:var(--sapShell_TextColor)}
+.ico{width:2rem;height:2rem;display:inline-flex;align-items:center;justify-content:center;color:var(--sapShell_TextColor);font-size:1.1rem;margin-left:.5rem}
+.i-search{position:relative;width:.85rem;height:.85rem;border:2px solid #131e29;border-radius:50%;display:inline-block}.i-search::after{content:"";position:absolute;width:2px;height:.45rem;background:#131e29;right:-.3rem;bottom:-.4rem;transform:rotate(-45deg)}
+.i-bell{position:relative;width:.8rem;height:.8rem;border:2px solid #131e29;border-bottom:0;border-radius:.5rem .5rem 0 0;display:inline-block;top:-.1rem}.i-bell::after{content:"";position:absolute;left:-.3rem;right:-.3rem;bottom:-.15rem;height:2px;background:#131e29}
+.nav{height:2.75rem;background:var(--sapShellColor);box-shadow:var(--sapContent_HeaderShadow);display:flex;align-items:stretch;padding:0 1.5rem;position:relative;z-index:1}
+.nav .burger{display:flex;align-items:center;margin-right:1.5rem;color:var(--sapShell_TextColor);font-size:1.1rem}
+.nav .tab{display:flex;align-items:center;padding:0 .75rem;margin-right:.25rem;font-size:.875rem;color:var(--sapShell_TextColor);border-bottom:.1875rem solid transparent}
+.nav .tab.on{color:#0064d9;font-weight:600;border-bottom-color:#0064d9}
+.shell .logo{font-weight:700;font-size:.875rem}.shell .sep{margin:0 .75rem;color:var(--sapContent_NonInteractiveIconColor)}.shell .app{font-size:.875rem}
+.shell .right{margin-left:auto;display:flex;align-items:center}
+.shell .avatar{width:2rem;height:2rem;border-radius:50%;background:var(--sapAvatar_6_Background);color:var(--sapTextColor);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.75rem;margin-left:.75rem}
+.hdr{background:#fff;box-shadow:var(--sapContent_HeaderShadow);padding:1rem 2rem 1.25rem}
+.hdr .top{display:flex;align-items:flex-start}.hdr .top>div:first-child{flex:1 1 auto;min-width:0}
+.hdr h1{font-size:1.5rem;font-weight:700;margin:0 0 .25rem;color:var(--sapTitleColor)}.hdr .sub{color:var(--sapContent_LabelColor);margin:0;font-size:.875rem}
+.status{font-weight:600;white-space:nowrap;margin-left:1.5rem;padding-top:.5rem}
+.status.neg{color:var(--sapNegativeTextColor)}.status.crit{color:var(--sapCriticalTextColor)}.status.pos{color:var(--sapPositiveTextColor)}.status.info{color:var(--sapInformativeTextColor)}
+.inv{display:inline-block;padding:0 .5rem;border-radius:.25rem;color:#fff;font-weight:700;font-size:.75rem;line-height:1.25rem;white-space:nowrap}
+.inv.neg{background:var(--sapIndication2_Background)}.inv.crit{background:var(--sapIndication3_Background)}.inv.pos{background:var(--sapIndication4_Background)}.inv.info{background:var(--sapIndication5_Background)}
+.facts{display:flex;flex-wrap:wrap;margin:1.25rem -1rem 0}.fact{flex:1 1 10rem;padding:0 1rem;margin-bottom:.25rem;border-right:1px solid var(--sapGroup_ContentBorderColor)}.fact:last-child{border-right:0}
+.fact .k{color:var(--sapContent_LabelColor);font-size:.75rem}.fact .v{font-size:1.125rem;font-weight:600;margin-top:.125rem;color:var(--sapTextColor)}.fact .v.neg{color:var(--sapNegativeTextColor)}.fact .v.crit{color:var(--sapCriticalTextColor)}.fact .v.pos{color:var(--sapPositiveTextColor)}
+.page{max-width:80rem;margin:0 auto;padding:1rem 2rem 5rem}
+.sec{margin-top:1.5rem}.sec>h2{font-size:1rem;font-weight:700;margin:0 0 .5rem;color:var(--sapTitleColor)}
+.trail{display:flex;align-items:stretch;overflow-x:auto;padding:.25rem 0}
+.node{flex:1 1 0;min-width:10rem;background:#fff;border:1px solid var(--sapGroup_ContentBorderColor);border-radius:.5rem;padding:.625rem .75rem;position:relative;margin-right:2rem}
+.node:last-child{margin-right:0}
+.node:not(:last-child)::after{content:"";position:absolute;right:-2rem;top:50%;width:2rem;height:0;border-top:1px solid var(--sapContent_NonInteractiveIconColor)}
+.node:not(:last-child)::before{content:"";position:absolute;right:-1.95rem;top:calc(50% - .3rem);width:.6rem;height:.6rem;border-top:1px solid var(--sapContent_NonInteractiveIconColor);border-right:1px solid var(--sapContent_NonInteractiveIconColor);transform:rotate(45deg);z-index:1}
+.node .t{font-size:.75rem;color:var(--sapContent_LabelColor)}.node .n{font-weight:700;margin:.125rem 0;color:var(--sapTitleColor)}.node .d{font-size:.75rem;color:var(--sapContent_LabelColor)}
+.node .st{font-size:.75rem;font-weight:600;margin-top:.25rem}
+.node.ev{border-color:var(--sapInformativeElementColor)}.node.ev .st{color:var(--sapInformativeTextColor)}
+.node.ag{border-color:var(--sapPositiveElementColor)}.node.ag .st{color:var(--sapPositiveTextColor)}
+.node.wait{border-color:var(--sapCriticalElementColor);border-width:2px}.node.wait .st{color:var(--sapCriticalTextColor)}
+.node.next .st{color:var(--sapContent_LabelColor)}
+.grid{display:flex;align-items:flex-start;margin:0 -.5rem}.grid>.block{margin:0 .5rem;min-width:0}.grid>.block:first-child{flex:7 1 0}.grid>.block:last-child{flex:5 1 0}
+@media (max-width:860px){.grid{display:block}.grid>.block{margin:0 .5rem 1rem}}
+.block{background:#fff;border-radius:var(--sapElement_BorderCornerRadius);box-shadow:var(--sapContent_Shadow0);padding:1rem 1rem 1.25rem}
+.block h2{font-size:1rem;font-weight:700;margin:0 0 .75rem;color:var(--sapTitleColor)}.block h3{font-size:.875rem;font-weight:700;margin:1.25rem 0 .5rem;color:var(--sapTitleColor)}
+.list{border-top:1px solid var(--sapList_BorderColor)}
+.opt{display:flex;align-items:flex-start;padding:.75rem .75rem;border-bottom:1px solid var(--sapList_BorderColor);background:#fff}
+.opt.sel{background:var(--sapList_SelectionBackgroundColor)}
+.opt>input{flex:0 0 auto;margin:.2rem .75rem 0 0;accent-color:var(--sapButton_Emphasized_Background)}.opt>div:nth-child(2){flex:1 1 auto;min-width:0}.opt>.cost{flex:0 0 auto;margin-left:1rem;text-align:right;white-space:nowrap}
+.opt .name{font-weight:600;color:var(--sapTextColor)}.opt .desc{color:var(--sapContent_LabelColor);font-size:.875rem;margin-top:.125rem}
+.opt .cost{font-weight:600}.opt .cost small{display:block;font-weight:400;color:var(--sapContent_LabelColor);font-size:.75rem}
+.rec{color:var(--sapInformativeTextColor);font-weight:600;font-size:.75rem;margin-left:.5rem;white-space:nowrap}
+.form{list-style:none;padding:0;margin:0}.form li{display:flex;padding:.375rem 0}.form .k{flex:0 0 11rem;color:var(--sapContent_LabelColor);padding-right:1rem}.form .v{flex:1 1 auto;min-width:0;overflow-wrap:anywhere;color:var(--sapTextColor)}
+.why p{margin:0 0 .5rem}
+table{width:100%;border-collapse:collapse;font-size:.875rem}
+th{text-align:left;color:var(--sapList_HeaderTextColor);font-weight:700;padding:.5rem .5rem;border-bottom:1px solid var(--sapList_BorderColor);background:#fff}
+td{padding:.625rem .5rem;border-bottom:1px solid var(--sapList_BorderColor);vertical-align:top;color:var(--sapTextColor)}tr:last-child td{border-bottom:1px solid var(--sapList_BorderColor)}
+td.num,th.num{text-align:right}
+.os{font-weight:600}.os.neg{color:var(--sapNegativeTextColor)}.os.crit{color:var(--sapCriticalTextColor)}.os.pos{color:var(--sapPositiveTextColor)}.os.info{color:var(--sapInformativeTextColor)}
+.footer{position:fixed;left:0;right:0;bottom:0;height:2.75rem;background:#fff;border-top:1px solid var(--sapPageFooter_BorderColor);padding:0 2rem;display:flex;align-items:center;z-index:2}
+.footer .note{color:var(--sapContent_LabelColor);font-size:.875rem;margin-right:auto}
+.btn{height:2.25rem;border-radius:var(--sapButton_BorderCornerRadius);padding:0 .75rem;font-family:inherit;font-size:.875rem;font-weight:600;border:1px solid var(--sapButton_BorderColor);background:var(--sapButton_Background);color:var(--sapButton_TextColor);cursor:pointer;margin-left:.5rem;min-width:2.25rem}
+.btn:hover{background:var(--sapList_Hover_Background)}
+.btn.emph{background:var(--sapButton_Emphasized_Background);border-color:var(--sapButton_Emphasized_Background);color:var(--sapButton_Emphasized_TextColor)}.btn.emph:hover{background:#0057d2}
+.btn.reject{background:var(--sapButton_Reject_Background);border-color:var(--sapButton_Reject_BorderColor);color:var(--sapButton_Reject_TextColor)}.btn.reject:hover{background:#ffc2de}
+.btn.accept{background:var(--sapButton_Accept_Background);border-color:var(--sapButton_Accept_BorderColor);color:var(--sapButton_Accept_TextColor)}.btn.accept:hover{background:#dbeda0}
+.toast{position:fixed;left:50%;bottom:4.5rem;transform:translateX(-50%);background:#131e29;color:#fff;padding:.5rem 1rem;border-radius:.5rem;font-size:.875rem;opacity:0;transition:opacity .2s;pointer-events:none;z-index:3}.toast.show{opacity:1}
+.node.done{border-color:var(--sapPositiveElementColor);border-width:1px}.node.done .st{color:var(--sapPositiveTextColor)}
+.btn:focus-visible{outline:2px dotted var(--sapContent_FocusColor);outline-offset:-.25rem}
+.bars{display:flex;align-items:flex-end;height:5rem;margin:.5rem 0 .25rem}.bars i{display:block;width:.375rem;margin-right:2px;background:var(--sapNeutralColor);opacity:.6}.bars i.hot{background:var(--sapNegativeElementColor);opacity:1}
+.legend{font-size:.75rem;color:var(--sapContent_LabelColor)}
+.strip{display:flex;align-items:flex-start;background:var(--sapInformationBackground);border:1px solid var(--sapInformationBorderColor);border-radius:var(--sapElement_BorderCornerRadius);padding:.5rem .75rem;font-size:.875rem;margin:.5rem 0}
+.strip .i{flex:0 0 auto;width:1rem;height:1rem;border-radius:50%;background:var(--sapInformativeElementColor);color:#fff;font-size:.6875rem;font-weight:700;display:flex;align-items:center;justify-content:center;margin:.2rem .625rem 0 0}
+.msg{background:var(--sapBackgroundColor);border:1px solid var(--sapGroup_ContentBorderColor);border-radius:.25rem;padding:.625rem .75rem;font-size:.875rem;white-space:pre-line}
+.gate2{display:flex;margin:0 -.375rem}.gate2 .g{flex:1 1 0;margin:0 .375rem;border:1px solid var(--sapGroup_ContentBorderColor);border-radius:.5rem;padding:.625rem .75rem}.gate2 .g b{display:block;margin-bottom:.125rem}
+.lab{margin-top:1.5rem}
+</style></head>
+<body><div class="shell"><span class="brand"><span class="mark">ABC</span></span><span class="home">PayHold <span class="chev">&#8964;</span></span><div class="right"><span class="ico"><i class="i-search"></i></span><span class="ico"><i class="i-bell"></i></span><span class="avatar">RC</span></div></div><div class="nav"><span class="burger">&#9776;</span><span class="tab">My Home</span><span class="tab">Sales</span><span class="tab on">Approvals</span><span class="tab">Insights</span></div>
+<section class="hdr"><div class="top"><div><h1>Payment run PR-2026-41: two lines held</h1><p class="sub">Run scheduled for 18:00. PayHold screened 148 lines between the schedule event and now. Two are held and need treasury to confirm before the run.</p></div><span class="status neg">Run in 1 h 52 min</span></div>
+<div class="facts"><div class="fact"><div class="k">Lines in the run</div><div class="v ">148</div></div><div class="fact"><div class="k">Screened</div><div class="v pos">148 of 148</div></div><div class="fact"><div class="k">Held</div><div class="v neg">2</div></div><div class="fact"><div class="k">Amount held</div><div class="v neg">€96,840</div></div><div class="fact"><div class="k">Event to hold</div><div class="v pos">47 s</div></div></div></section>
+<main class="page"><div class="sec"><h2>How it got here</h2><div class="trail"><div class="node ev"><div class="t">Mon 09:12</div><div class="n">Business Partner changed</div><div class="d">V-100 bank details, MDG</div><div class="st">Event on AEM</div></div><div class="node ev"><div class="t">16:00:00</div><div class="n">Payment Run Scheduled</div><div class="d">S/4HANA Payments, 148 lines</div><div class="st">Event on AEM</div></div><div class="node ag"><div class="t">16:00:47</div><div class="n">PayHold</div><div class="d">2 suspects held, BIS cases opened</div><div class="st">Agent, done</div></div><div class="node wait"><div class="t">now</div><div class="n">Treasury confirms</div><div class="d">Two people to release</div><div class="st">Waiting for you</div></div><div class="node ev"><div class="t">18:00</div><div class="n">Run executes</div><div class="d">146 lines, on time</div><div class="st">Event on AEM</div></div></div></div>
+<div class="sec"><h2>Proposal</h2><div class="grid"><div class="block"><h2>Held lines</h2>
+<table><tr><th>Vendor</th><th>Invoice</th><th class="num">Amount</th><th>Why held</th><th>Case</th></tr>
+<tr><td>V-100 Nordic Steel AB</td><td>INV-7781</td><td class="num">€84,500</td><td>Bank details changed Monday, change made outside the usual channel, first payment since</td><td>BIS-2026-0914</td></tr>
+<tr><td>V-233 Lab Services C</td><td>INV-3391-A</td><td class="num">€12,340</td><td>Same amount, vendor and reference as INV-3391 paid 14 Mar</td><td>BIS-2026-0915</td></tr></table>
+<h3>What happens at 18:00</h3><ul class="form"><li><span class="k">Without action</span><span class="v">Both holds stand. 146 lines are paid on time. Nothing is lost by waiting.</span></li><li><span class="k">To release V-100</span><span class="v">Call-back to the vendor&#x27;s known contact, then two treasury users confirm in this screen</span></li><li><span class="k">To release the duplicate</span><span class="v">Not recommended; INV-3391 shows as paid in S/4HANA</span></li></ul>
+<div class="gate2" style="margin-top:14px"><div class="g"><b>Confirmation 1 of 2</b>A. Berg, Treasury, confirmed hold at 16:14</div><div class="g"><b>Confirmation 2 of 2</b>Waiting for a second treasury user</div></div></div>
+<div class="block why"><h2>Why these are held</h2><p class="q">V-100 is on the 30-day watch list: the IBAN changed on Monday and the change was keyed by a user who does not normally maintain this vendor. This is the first payment since the change. INV-3391-A matches a payment already made in March on amount, vendor and reference. Everything else in the run scored normal.</p>
+<h3>Data the agent read</h3><ul class="form"><li><span class="k">Business Integrity Screening</span><span class="v">2 rule hits, scores 91 and 88</span></li><li><span class="k">MDG change log</span><span class="v">V-100 bank details, Mon 09:12, user TMPSUP</span></li><li><span class="k">Payment history</span><span class="v">INV-3391 paid 14 Mar, €12,340</span></li><li><span class="k">Vendor master</span><span class="v">V-100 active since 2019, no prior changes</span></li></ul>
+<h3>Event trail, replayable</h3><ul class="form"><li><span class="k">Trigger</span><span class="v">sap.s4.beh.paymentrun.v1.PaymentRun.Scheduled.v1</span></li><li><span class="k">Watch list from</span><span class="v">sap.s4.beh.businesspartner.v1.BusinessPartner.Changed.v1</span></li><li><span class="k">Published</span><span class="v">payment/hold/v1 (2), payment/screened/v1 (146)</span></li><li><span class="k">Audit</span><span class="v">AEM replay log, last 24 h, available to the auditor</span></li></ul></div></div></div><div class="strip lab"><span class="i">i</span><span>Lab build. S/4HANA data simulated with standard event payloads; agents run on SAP AI Core through the SAP Cloud SDK for AI; events on SAP Advanced Event Mesh.</span></div></main>
+<div class="footer"><span class="note">Releasing a hold needs two treasury users. The agent never pays.</span><button class="btn" onclick="decide(false)">Release V-100</button><button class="btn accept" onclick="decide(true)">Confirm holds</button></div>
+<div class="toast" id="toast"></div><script>
+function decide(ok){var w=document.querySelector('.node.wait');var n=document.querySelector('.node.next');var t=document.getElementById('toast');
+if(w){w.classList.remove('wait');w.classList.add(ok?'done':'ev');w.querySelector('.st').textContent=ok?'Approved by you':'Rejected by you';w.querySelector('.t').textContent=new Date().toTimeString().slice(0,8);}
+if(n&&ok){n.classList.remove('next');n.classList.add('ev');n.querySelector('.st').textContent='Event published on AEM';}
+var f=document.querySelector('.footer');if(f){f.innerHTML='<span class="note">'+(ok?'Approved. The decision event is on SAP Advanced Event Mesh; subscribers are updating.':'Rejected. The agents have been told; nothing was posted.')+'</span>';}
+t.textContent=ok?'Approved':'Rejected';t.classList.add('show');setTimeout(function(){t.classList.remove('show')},2500);}
+</script></body></html>
